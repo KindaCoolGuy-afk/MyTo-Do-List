@@ -3,32 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- I-paste ito sa loob ng <head> </head> -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet" />
     <title>Document</title>
     <style>
         *{
             padding: 0;
             margin: 0;
             box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif ;
         }
 
         header{
-            padding: 10px 10px  10px 10px;
-            border-bottom: 1px solid gray;
+            display: flex;
+            column-gap: 10px;
+            align-items: center;
+            padding: 20px 20px  20px 20px;
+            border-bottom:  gray;
             position: sticky;
             top: 0;
+            box-shadow: 4px 4px 5px rgba(158, 158, 158, 0.301);
+            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+            color: white;
+            background-color: blue;
+            min-width: 100dvh;
+        }
+
+        .title-2{
+            font-family: "Lucida Handwriting", "Brush Script MT", cursive;
+        }
+
+        .task-tittle-header{
+            padding: 5px 0 0 5px;
+            background-color: blue;
+            color: white;
+            border-radius: 5px 5px 0 0;
         }
 
         .section{
-            margin-top: 5%;
+            margin-top: 2%;
             padding: 0 auto;
         }
 
         .container{
             width: 50%;
             margin: 0 auto;
-            border: 1px solid gray;
-            width: 400px;
-            height: 450px;
+            width: 60dvh;
+            height: 600px;
+            box-shadow: 4px 4px 4px 6px rgba(158, 158, 158, 0.301);
+            border-radius: 5px;
+            border: 1px solid rgba(176, 163, 163, 0.301);
         }
 
         .list-board{
@@ -41,25 +65,37 @@
         .input{
             margin-top: 40px;
         }
+        
 
         .task-container{
-            max-height: 336px;
+            max-height: 360px;
             overflow-y: auto;
+            margin-top: 138px;
+            display: flex;
+            justify-content: center;
         }
+
+
+        ::-webkit-scrollbar{
+            display: none;
+        }
+
     </style>
 </head>
 <body>
     <header class="head">
-        <h1 class="title">To-do List</h1>
+        <h1 class="title">To-do List</h1><h1 class="title-2">by John kenneth Velsaco</h1>
     </header>
 
     <div class="section">
         <div class="container">
             <div class="list-board">
-               <div>
+               <div class="task-tittle-header">
                 <h1 class="task-header">Add Task</h1>
                </div>
-                <input type="text" class="inputs" id="input" placeholder="Insert Task..">
+                  <div class="Input-sec">
+                      <p>Enter Task name</p>
+                      <input type="text" class="inputs" id="input" placeholder="Insert Task..">
                      <p id="missing"></p>
                     <label for="category">Choose Task status</label>
                         <select name="" id="taskStatus">
@@ -69,6 +105,7 @@
                             <option value="High">High</option>
                         </select>
                         <button class="submitBtn" onclick="submit();" id="submitBtn">Add task</button>
+                  </div>
             </div>
 
             <!--Task render-->
@@ -147,7 +184,11 @@
     //Step 5: render task in UI
     function renderTask(task){
         const newTask = document.createElement('div'); // Create new div Element
-        newTask.innerHTML = `<div style="border: 1px solid black; display: flex; flex-direction: column;"><h3 id="task-name">${task.input}</h3><p id="task-priority">${task.priority}</p> <button type="button" onclick="deletebtn(${task.id});">Delete</button></div>`; //Problem: Undefined
+        newTask.innerHTML = `<div style="display: flex; margin-top: 5px; flex-direction: column; justify-content: center; width: 400px; padding: 10px; border: 1px solid black; display: flex; flex-direction: column; border-radius: 10px; ">
+            <h3 id="task-name" style="padding-bottom: 3px;">Task name: ${task.input}</h3>
+            <p id="task-priority" style="padding-bottom: 5px;">Status: ${task.priority}</p>
+            <button type="button"  onclick="deletebtn(${task.id});" style="border-radius: 10px; width: 100px; text-align: center;" ><i class="ri-delete-bin-fill"></i></button>
+            </div>`; //Problem: Undefined Solution: Add task param in function inside in Deletetaskbtn 
         taskList.append(newTask); // Append task to the UI
     }
 
