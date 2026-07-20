@@ -14,12 +14,12 @@
             font-family: Arial, Helvetica, sans-serif ;
         }
 
-        header{
+        .head{
             display: flex;
             column-gap: 10px;
             align-items: center;
-            padding: 20px 20px  20px 20px;
             border-bottom:  gray;
+            padding: 10px 10px  10px 10px;
             position: sticky;
             top: 0;
             box-shadow: 4px 4px 5px rgba(158, 158, 158, 0.301);
@@ -62,8 +62,14 @@
             justify-items: center;
         }
 
-        .input{
-            margin-top: 40px;
+        .inputs{
+            margin-top: 5px;
+            width: 350px;
+            padding: 10px;
+            border-radius: 10px;
+            outline: none;
+            border: 1px solid gray;
+            
         }
         
 
@@ -80,12 +86,80 @@
             display: none;
         }
 
+        .task-enter{
+            position: relative;
+            left: 2%;
+        }
+
+        .input-label{
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            margin: 5px 0 0 0;
+        }
+
+        .msg-error{
+            position: relative; left: 10%; margin-top: 3px; display: flex; color:red; align-items: center; background: rgba(225, 185, 185, 0.938); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); height: 30px; width: 130px; border: 1px solid black; color: red; font-size: 12px;
+        }
+
+        .input-stat{
+            display: flex;
+            flex-direction: column;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .category{
+             position: relative;
+             left: 2%;
+        }
+
+        #taskStatus{
+            width: 120px;
+            height: 35px;
+            border-radius: 10px;
+        }
+
+        .options{
+            position: relative;
+            left: 10%;
+        }
+
+        .inp{
+            text-align: center;
+        }
+
+        .Addtaskbtn{
+            text-align: center;
+        }
+        
+        .submitBtn{
+            height: 35px;
+            width: 140px;
+            border-radius: 10px;
+            outline: none;
+            border: 1px solid gray;
+        }
+
+        #all-stat:disabled{
+            filter: grayscale(100%);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        i, .submitBtn{
+            font-size: 12px;
+        }
+
     </style>
 </head>
 <body>
     <header class="head">
         <h1 class="title">To-do List</h1><h1 class="title-2">by John kenneth Velsaco</h1>
     </header>
+
+    <!--TODO: Design the Whole page Tomorrow-->
+    <!--TODO: Add media Query to make it Responsive-->
 
     <div class="section">
         <div class="container">
@@ -94,17 +168,29 @@
                 <h1 class="task-header">Add Task</h1>
                </div>
                   <div class="Input-sec">
-                      <p>Enter Task name</p>
-                      <input type="text" class="inputs" id="input" placeholder="Insert Task..">
-                     <p id="missing"></p>
-                    <label for="category">Choose Task status</label>
-                        <select name="" id="taskStatus">
-                            <option aria-label="Default">All Status</option>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                        <button class="submitBtn" onclick="submit();" id="submitBtn">Add task</button>
+                        <div class="input-label">
+                            <p class="task-enter">Enter Task name:</p>
+                                <div class="inp">
+                                    <input type="text" class="inputs" id="input" placeholder="Insert Task..">
+                                    <p id="missing"></p>
+                                </div>
+                        </div>
+                        <!--Category Stats Container-->
+                        <div class="input-stat">
+                            <label for="category" class="category">Choose Task status:</label>
+                                <div class="options">
+                                    <select name="" id="taskStatus">
+                                        <option aria-label="Default" id="all-stat">All Status</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <!--Button Container-->
+                        <div class="Addtaskbtn">
+                            <button class="submitBtn" onclick="submit();" id="submitBtn"><i class="ri-add-fill"></i>Add task</button>
+                        </div>
                   </div>
             </div>
 
@@ -141,10 +227,17 @@
 
     const inp = document.querySelector(".inputs");
     const btn  = document.querySelector(".submitBtn");
+    const option = document.querySelector("#all-stat");
  
      //Step 6: When i reload it shouldn't reet the Input
     let tasks = JSON.parse(localStorage.getItem("tasks")) || []; // Take all the value tasks from local storage or if blank if there's none
     tasks.forEach(renderTask); // Looping each tasks saved from Local storage and call rendertask to render it ot UI
+
+
+    /*FIXME: Disable the All status element*/
+    function disableAllStat(){
+        option.disabled = true;
+    }
 
      //Step 2: Validate the Inserted Input value if there's special character
     inp.addEventListener('input', function(e){
@@ -158,11 +251,19 @@
 
         //output
         const missings = document.getElementById("missing");
+
+        const formContainer = document.querySelector(".task-container");
         
         //Step 3: Checks if the Input task name is empty
         if(input.trim() === ""){ // checks if the Input is empty
-            missings.innerHTML += `<p id="missing" style="color: red; font-size: 12px;">Please fill out the Form!</p>`; // if empty show this message
+            missings.innerHTML += `<div class="msg-error">Please fill out the Form!</p></div>`; // if empty show this message
         return; // then return cut the operation
+        }
+
+         //FIXME:Prevention for repeating message error after one error message is out
+        if(!missings){
+            const errmsg = `<div class="msg-error">Please fill out the Form!</p></div>`;
+            formContainer.insertAdjacentHTML('beforehand', errmsg);
         }
 
         //Step 4: Save it to Local Storage(i think i can just destructirized this to make it simplier)
@@ -187,7 +288,7 @@
         newTask.innerHTML = `<div style="display: flex; margin-top: 5px; flex-direction: column; justify-content: center; width: 400px; padding: 10px; border: 1px solid black; display: flex; flex-direction: column; border-radius: 10px; ">
             <h3 id="task-name" style="padding-bottom: 3px;">Task name: ${task.input}</h3>
             <p id="task-priority" style="padding-bottom: 5px;">Status: ${task.priority}</p>
-            <button type="button"  onclick="deletebtn(${task.id});" style="border-radius: 10px; width: 100px; text-align: center;" ><i class="ri-delete-bin-fill"></i></button>
+            <button type="button"  onclick="deletebtn(${task.id});" style="cursor: pointer; background: none; border: none; cursor: pointer; outline: none; padding: 0; width: 0; text-align: center;" ><i class="ri-delete-bin-fill"></i></button>
             </div>`; //Problem: Undefined Solution: Add task param in function inside in Deletetaskbtn 
         taskList.append(newTask); // Append task to the UI
     }
@@ -202,6 +303,15 @@
         tasks.forEach(renderTask); // Loop to each rendered tasks
        // problem: I can't delete since there's nothing to read
     }
+
+    /*TODO: Edit task function*/
+    // function edit(id){
+    //     tasks = tasks.map((task) => {
+
+    //     });
+    // }
+
+
 
     // Need to create Index as anchor on every List
 
