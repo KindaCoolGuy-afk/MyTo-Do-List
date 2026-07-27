@@ -173,6 +173,7 @@
                                 <div class="inp">
                                     <input type="text" class="inputs" id="inputs" placeholder="Insert Task.."> <!--Matched in JS-->
                                     <p id="missing"></p>
+                                    <p id="duplicate"></p>
                                 </div>
                         </div>
                         <!--Category Stats Container-->
@@ -213,8 +214,8 @@
      // JSON.stringyfy set the object and array/object into String to save
 
     let tasks = JSON.parse(localStorage.getItem("tasks")) || []; // Take all the value tasks from local storage or if blank if there's none
-    tasks.forEach(renderTask); // Looping each tasks saved from Local storage and call rendertask to render it ot UI; Silently throwing error
-    console.log(tasks);
+    tasks.forEach(renderTask); // Loop through each task (loaded from Local Storage) and render it to the UI
+    console.log(tasks); // My debugging
 
     let newTasks = null; // initialization
 
@@ -232,6 +233,7 @@
         const priority = document.getElementById("taskStatus").value; // Take value from the Drop down
         //output
         const missings = document.getElementById("missing");
+        const double = document.getElementById("duplicate");
 
         const formContainer = document.querySelector(".task-container");
         
@@ -240,6 +242,16 @@
         if(input.trim() === ""){ // remove the white spaces then check if the input is empty
             return missings.innerHTML += `<div class="msg-error"><p>Please fill out the Form!</p></div>`; // If there's no value inputted in input, return this error message
         }
+
+         // check if there'sDuplicate
+        // tasks.forEach(task => {
+        //     return task.inputs == inputs
+        //         if(task.inputs == inputs){ // Logic error
+        //             //console.log();
+        //             return double.innerHTML +=  `<div class="msg-missing"><p>Item Exisiting Already!</p></div>`; 
+        //         }
+        //  });
+
 
         //Step 4: make key-value pairs in the Object
         const task = { // save id, input annd priority in a object
