@@ -171,7 +171,7 @@
                         <div class="input-label">
                             <p class="task-enter">Enter Task name:</p>
                                 <div class="inp">
-                                    <input type="text" class="inputs" id="input" placeholder="Insert Task.."> <!--Matched in JS-->
+                                    <input type="text" class="inputs" id="inputs" placeholder="Insert Task.."> <!--Matched in JS-->
                                     <p id="missing"></p>
                                 </div>
                         </div>
@@ -198,41 +198,16 @@
             <div class="task-container">
                 <div id="taskList">
                 </div>
-
             </div>
+            
         </div>
     </div>
 <script>
 
-    /* ============================================
-   BUG LOG (fixed issues — kept for reference)
-   ============================================
-   1. Input showed as `null` on reload
-      Cause: tasks.push(task, index) pushed TWO array items 
-             instead of one — the stray `index` became NaN/null 
-             after JSON.stringify, and renderTask(null) crashed.
-      Fix:   tasks.push(task) — one argument only.
-
-   2. Every task had id: undefined
-      Cause: submit() relied on an `index` param that was never 
-             passed in from the button's onclick.
-      Fix:   Generate id at creation time: id: Date.now()
-
-   3. Delete button removed ALL tasks
-      Cause: filter(function(){ return task.id !== id }) took 
-             no parameter, so it never checked the actual array 
-             item — it just compared the outer `task` to itself.
-      Fix:   filter(function(t){ return t.id !== id })
-
-      4. Uncaught error: task.push(tasks) is not a funcction
-      cause: since
-
-   ============================================ */
-
     const inp = document.querySelector(".inputs");
     const btn  = document.querySelector(".submitBtn");
     const option = document.querySelector("#all-stat");
- 
+
      //Step 6: When i reload it shouldn't reet the Input
      // JSON.parse set the object or array into string to be used again
      // JSON.stringyfy set the object and array/object into String to save
@@ -241,11 +216,10 @@
     tasks.forEach(renderTask); // Looping each tasks saved from Local storage and call rendertask to render it ot UI; Silently throwing error
     console.log(tasks);
 
-    /*FIXME: Disable the All status element*/
-    function disableAllStat(){
-        option.disabled = true;
-    }
+    let newTasks = null; // initialization
 
+    /*FIXME: Disable the All status element*/
+    
      //Step 2: Validate the Inserted Input value if there's special character
     inp.addEventListener('input', function(e){
        e.target.value = e.target.value.replace(/[!@#$%^&*()_\-+=]/g, ''); //remove the forbidden Special Character
@@ -254,7 +228,7 @@
      function submit(){
         //FIXME: The all status shouldn't be recorded
          // Step 1: Take the value Inserted
-        const input = document.getElementById("input").value; // takes the value from id="input"
+        const input = document.getElementById("inputs").value; // takes the value from id="input"
         const priority = document.getElementById("taskStatus").value; // Take value from the Drop down
         //output
         const missings = document.getElementById("missing");
@@ -263,9 +237,8 @@
         
         //FIXME: Make sure the error message is only one time
         //Step 3: Checks if the Input task name is empty
-        if(input.trim() === ""){ // checks if the Input is empty
-            missings.innerHTML += `<div class="msg-error"><p>Please fill out the Form!</p></div>`; // if empty show this message
-        return; // then return cut the operation
+        if(input.trim() === ""){ // remove the white spaces then check if the input is empty
+            return missings.innerHTML += `<div class="msg-error"><p>Please fill out the Form!</p></div>`; // If there's no value inputted in input, return this error message
         }
 
         //Step 4: make key-value pairs in the Object
@@ -275,32 +248,99 @@
             priorities: priority
         }; //this is Definitely the problem the problem (task => input); Releases index ID; another problem this throws null value
     
-        const {id, inputs, priorities} = task; // Destrucrtured (Unpacking the data inside the Object)
+        const {id, inputs, priorities} = task; // Destrucrtured (Unpacking the data inside the Object); re-declared the task variable in local scope
         
         tasks.push(task); // Push tasks in Array
         localStorage.setItem("tasks", JSON.stringify(tasks)); // Turn object or array into string to Save Tasks in Local Storage and Save it to Local Storage
-        console.log(task.id);
-        renderTask(task);// Live rendering
+        console.log(tasks);
+        renderTask(task);
+            
+        // Live rendering
 
-        document.getElementById("input").value = ""; //DEbug: mismatch of Input id that causes Input to be unreadable
+        document.getElementById("inputs").value = ""; //DEbug: mismatch of Input id that causes Input to be unreadable
     };
 
     //Step 5: render task in UI
     function renderTask(task){
         const newTask = document.createElement('div'); // Create new div Element
-        newTask.innerHTML = `<div style="display: flex; margin-top: 5px; flex-direction: column; justify-content: center; width: 400px; padding: 10px; border: 1px solid black; display: flex; flex-direction: column; border-radius: 10px; ">
-           <input id="edit-inp" disabled placeholder="Taske name:${task.inputs}">
+        newTask.innerHTML = `<div data-id="contain" style="display: flex; margin-top: 5px; flex-direction: column; justify-content: center; width: 400px; padding: 10px; border: 1px solid black; display: flex; flex-direction: column; border-radius: 10px; ">
+           <input id="edit-inp" disabled class="editInp" placeholder="Taske name:${task.inputs}">
             <p id="editTask" style="font-size: 10px; color: red;"></p>
-           <select disabled id="edit-stat">
+           <select disabled id="edit-stat" class="edit-stats">
                <option aria-labelled="currentValue"><p id="task-priority" style="padding-bottom: 5px;">Status: ${task.priorities}</p></option>
+               <option>Low</option>
+               <option>Medium</option>
+               <option>High</option>
             </select>
-                <div style="display: flex; ">
-                    <button type="button" id="editBtn" onclick="edit(${task.id})" style="font-color: &#xF62C; cursor: pointer; background: none; border: none; cursor: pointer; outline: none; padding: 0; width: 20px;"><i class="ri-pencil-ai-line"></i></button>
+                <div style="display: flex; data-id="btnEdit" ">
+                    <button type="button" id="editBtn" class="editbtn" onclick="edit(${task.id})" style="font-color: &#xF62C; cursor: pointer; background: none; border: none; cursor: pointer; outline: none; padding: 0; width: 20px;"><i id="icons" class="ri-pencil-ai-line"></i></button>
                     <button type="button"  onclick="deletebtn(${task.id});" style="cursor: pointer; background: none; border: none; cursor: pointer; outline: none; padding: 0; width: 20px;" ><i class="ri-delete-bin-fill"></i></button>
                 </div>
             </div>`; //Problem: Undefined Solution: Add task param in function inside in Deletetaskbtn 
         taskList.append(newTask); // Append task to the UI
     }
+
+     const ebtn = document.querySelector(".editbtn");
+     const openInput = document.querySelector(".editInp");
+     const icon = document.getElementById("icons");
+
+    //  ebtn.addEventListener('click', () => {
+    //               if(icon.classList.contains('ri-pencil-ai-line')){
+    //                 icon.classList.replace('ri-pencil-ai-line', 'ri-save-line');
+    //               } else{
+    //                 icon.classList.replace('ri-pencil-ai-line', 'ri-save-line');
+    //               }
+    //           });
+    /*TODO: Edit task function*/
+    function edit(id){
+         // find the ID from the localStorage using iD params (object method or array method)
+         const taskToEdit = tasks.find(task => task.id === id);
+         const contain = document.getElementById("contain");
+
+         // enable the Input element
+         document.querySelector(".editInp").disabled = false;
+         document.getElementById("edit-inp").value = taskToEdit.inputs;
+         document.getElementById("edit-stat").value = taskToEdit.priorities;
+         document.querySelector(".edit-stats").disabled = false;
+
+        const editBtn = document.querySelector(".editbtn");
+        editBtn.innerHTML = `<i class="ri-save-line"></i>`;
+        editBtn.setAttribute("onclick", `save(${id})`);
+
+         newTasks = id;
+     };
+
+     // save edited task
+     function save(id){
+        const newInput = document.getElementById("edit-inp").value;
+        const newPriority = document.getElementById("edit-stat").value;
+
+              const index = tasks.findIndex(task => task.id === id); // find the position of the Item
+              tasks[index] = {id: index, // Locate the Location of the item by using Index and store it in the Object
+              inputs: newInput,  // Problem 1: inputs are empty
+              priorities: newPriority // Problem 2: This is empty too
+              };
+ 
+              /*
+              tasks[0] = {
+              id: 0,
+              inputs: boom,
+              priorities: high
+              };
+              */
+
+              // push(task, index, 0)
+            //   newInput = inputs;
+            //   newPriority = priorities; // This is inside the constant variable so i cannot edit/change value it
+              
+               // then change the data into string using stringyfy
+               tasks.push(tasks[index]); // Pushes the Edited data inside the Local storage (Problem fixed)
+               localStorage.setItem("tasks",JSON.stringify(tasks));
+               taskToEdit = null;
+               taskList.innerHTML = "";
+               tasks.forEach(renderTask);
+               console.log(tasks[index]);
+     };
 
     // Delete Data from Local Storage
     function deletebtn(id){ // Date.now() has become the ID; fixed: place id, task params here instead of inside function
@@ -313,26 +353,8 @@
        // problem: I can't delete since there's nothing to read
     }
 
-    /*TODO: Edit task function*/
-    function edit(){
-         const edtBtn = document.getElementById("editBtn");
-        // // get data from tasks local storage
 
 
-        // // find the ID from the localStorage using iD params (objject method or array method)
-
-        //  //If id doesn't match, then the data stays the same
-        // tasks = tasks.find( task => {
-        //      return task.id !== id;
-        // });
-
-        // // enable the Input element
-
-        // // afterclicking enter the data should be pushed in the Local storage
-
-        // // then change the data into string using stringyfy
-        // localStorage.setItem("tasks", JSON.stringify(tasks));
-     }
     // Need to create Index as anchor on every List
 
     //Problem: Local storage isn't reading anything input and ID that's why when i reload it, the data disappears
