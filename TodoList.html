@@ -151,6 +151,8 @@
             font-size: 12px;
         }
 
+        
+
     </style>
 </head>
 <body>
@@ -240,11 +242,18 @@
         //FIXME: Make sure the error message is only one time
         //Step 3: Checks if the Input task name is empty
         if(input.trim() === ""){ // remove the white spaces then check if the input is empty
-            return missings.innerHTML += `<div class="msg-error"><p>Please fill out the Form!</p></div>`; // If there's no value inputted in input, return this error message
+            missings.innerHTML = `<div class="msg-error"><p>Please fill out the Form!</p></div>`; // If there's no value inputted in input, return this error message
+            return;
+        }else{ // If there's input already inside the input after the error msg pops up, the error message will be removed.
+            document.getElementById("inputs").value = input;
+            missings.innerHTML = ""; // i think this should be inside the add event listener
         }
 
+        // Check if there's Existing item alr
+        //tasks.forEach(){// If same name, then item is alr existing}
+
          // check if there'sDuplicate
-        // tasks.forEach(task => {
+        // tasks.map(task => {
         //     return task.inputs == inputs
         //         if(task.inputs == inputs){ // Logic error
         //             //console.log();
@@ -264,19 +273,18 @@
         
         tasks.push(task); // Push tasks in Array
         localStorage.setItem("tasks", JSON.stringify(tasks)); // Turn object or array into string to Save Tasks in Local Storage and Save it to Local Storage
-        console.log(tasks);
+        console.log(...tasks);
+        // Live rendering
         renderTask(task);
             
-        // Live rendering
-
-        document.getElementById("inputs").value = ""; //DEbug: mismatch of Input id that causes Input to be unreadable
+        document.getElementById("inputs").value = ""; //DEbug: mismatch of Input id that causes Input to be unreadable Input < inputs
     };
 
     //Step 5: render task in UI
     function renderTask(task){
         const newTask = document.createElement('div'); // Create new div Element
         newTask.innerHTML = `<div data-id="contain" style="display: flex; margin-top: 5px; flex-direction: column; justify-content: center; width: 400px; padding: 10px; border: 1px solid black; display: flex; flex-direction: column; border-radius: 10px; ">
-           <input id="edit-inp" disabled class="editInp" placeholder="Taske name:${task.inputs}">
+           <input id="edit-inp" disabled class="editInp" placeholder="Task name:${task.inputs}">
             <p id="editTask" style="font-size: 10px; color: red;"></p>
            <select disabled id="edit-stat" class="edit-stats">
                <option aria-labelled="currentValue"><p id="task-priority" style="padding-bottom: 5px;">Status: ${task.priorities}</p></option>
@@ -306,22 +314,20 @@
     /*TODO: Edit task function*/
     function edit(id){
          // find the ID from the localStorage using iD params (object method or array method)
-         const taskToEdit = tasks.find(task => task.id === id);
-         const contain = document.getElementById("contain");
+         const taskToEdit = tasks.find(task => { return task.id === id}); // Find task using task id
+         const contain = document.getElementById("contain"); 
 
          // enable the Input element
          document.querySelector(".editInp").disabled = false;
          document.getElementById("edit-inp").value = taskToEdit.inputs;
-         document.getElementById("edit-stat").value = taskToEdit.priorities;
          document.querySelector(".edit-stats").disabled = false;
-
+         document.getElementById("edit-stat").value = taskToEdit.priorities;
         const editBtn = document.querySelector(".editbtn");
         editBtn.innerHTML = `<i class="ri-save-line"></i>`;
         editBtn.setAttribute("onclick", `save(${id})`);
 
          newTasks = id;
      };
-
      // save edited task
      function save(id){
         const newInput = document.getElementById("edit-inp").value;
@@ -332,16 +338,7 @@
               inputs: newInput,  // Problem 1: inputs are empty
               priorities: newPriority // Problem 2: This is empty too
               };
- 
-              /*
-              tasks[0] = {
-              id: 0,
-              inputs: boom,
-              priorities: high
-              };
-              */
 
-              // push(task, index, 0)
             //   newInput = inputs;
             //   newPriority = priorities; // This is inside the constant variable so i cannot edit/change value it
               
