@@ -200,6 +200,12 @@
             <!--Task render-->
             <div class="task-container">
                 <div id="taskList">
+                    <select name="Statsopti" id="status-opti">
+                        <option value="All Status">All status</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
                 </div>
             </div>
             
@@ -236,40 +242,34 @@
         //output
         const missings = document.getElementById("missing");
         const double = document.getElementById("duplicate");
-
         const formContainer = document.querySelector(".task-container");
         
-        //FIXME: Make sure the error message is only one time
         //Step 3: Checks if the Input task name is empty
         if(input.trim() === ""){ // remove the white spaces then check if the input is empty
             missings.innerHTML = `<div class="msg-error"><p>Please fill out the Form!</p></div>`; // If there's no value inputted in input, return this error message
-            return;
+            return; // Cut loop process to make sure only one message return
         }else{ // If there's input already inside the input after the error msg pops up, the error message will be removed.
-            document.getElementById("inputs").value = input;
+            //document.getElementById("inputs").value = input; -> What might be the function of this line of code?
             missings.innerHTML = ""; // i think this should be inside the add event listener
         }
 
-        // Check if there's Existing item alr
-        //tasks.forEach(){// If same name, then item is alr existing}
-
-         // check if there'sDuplicate
-        // tasks.map(task => {
-        //     return task.inputs == inputs
-        //         if(task.inputs == inputs){ // Logic error
-        //             //console.log();
-        //             return double.innerHTML +=  `<div class="msg-missing"><p>Item Exisiting Already!</p></div>`; 
-        //         }
-        //  });
-
-
         //Step 4: make key-value pairs in the Object
-        const task = { // save id, input annd priority in a object
+        // Temporary saves data inside the object
+        const task = { // save id, input annd priority in a objectk key value pair
             id: Date.now(),  
             inputs: input, 
             priorities: priority
         }; //this is Definitely the problem the problem (task => input); Releases index ID; another problem this throws null value
     
-        const {id, inputs, priorities} = task; // Destrucrtured (Unpacking the data inside the Object); re-declared the task variable in local scope
+        const {id, inputs, priorities} = task; // Destrucrtured (Unpacking the data inside the Object) unpack values into independet variables; re-declared the task variable in local scope
+
+        // TODO: fix the comparison logic
+        // Check if there's Existing item alr, if it is return prevents it to push  n exisiting item
+       const isDuplicate = tasks.some(item => item.id === tasks.id); // filter or some
+        if(isDuplicate){
+            missings.innerHTML = `<div>Item already exist</div>`;
+            return;
+        }
         
         tasks.push(task); // Push tasks in Array
         localStorage.setItem("tasks", JSON.stringify(tasks)); // Turn object or array into string to Save Tasks in Local Storage and Save it to Local Storage
@@ -326,14 +326,14 @@
         editBtn.innerHTML = `<i class="ri-save-line"></i>`;
         editBtn.setAttribute("onclick", `save(${id})`);
 
-         newTasks = id;
+         //newTasks = id; -> what is the function of this code?
      };
      // save edited task
      function save(id){
         const newInput = document.getElementById("edit-inp").value;
         const newPriority = document.getElementById("edit-stat").value;
 
-              const index = tasks.findIndex(task => task.id === id); // find the position of the Item
+              const index = tasks.findIndex(task =>{ return task.id === id}); // find the position of the Item
               tasks[index] = {id: index, // Locate the Location of the item by using Index and store it in the Object
               inputs: newInput,  // Problem 1: inputs are empty
               priorities: newPriority // Problem 2: This is empty too
@@ -362,8 +362,26 @@
        // problem: I can't delete since there's nothing to read
     }
 
+    
+        const filters = document.getElementById("status-opti");
 
+        filters.addEventListener("change", function(){
+            const SelectedStatus = this.value;
+            
+            const filterStatus = SelectedStatus === "" ? tasks : tasks.filter(task => 
+                 task.priorities === SelectedStatus);
+                renderTasks(filterStatus); // this is the problem why another task is rendered everytime I filter task status
+        });
 
+        // render Filtered tasks
+        function renderTasks(tasks) { // note: plural, this is the "controller"
+            taskList.innerHTML = ""; // clear old content first
+
+            tasks.forEach(task => {
+                renderTask(task); // your existing single-task function, unchanged
+            });
+        }
+    
     // Need to create Index as anchor on every List
 
     //Problem: Local storage isn't reading anything input and ID that's why when i reload it, the data disappears
