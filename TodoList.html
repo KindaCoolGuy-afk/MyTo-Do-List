@@ -265,7 +265,11 @@
 
         // TODO: fix the comparison logic
         // Check if there's Existing item alr, if it is return prevents it to push  n exisiting item
-       const isDuplicate = tasks.some(item => item.id === tasks.id); // filter or some
+        // Problem: This one is loose checking the Duplicates
+        // Cause: I literally Compare the tasks value(represent by item) to itself.
+        // Solution: Since item is the representation of the iteration of tasks array, just compare it to task object tosee if the stored value inside the object to check if the tasks array have exisitng data already.
+       const isDuplicate = tasks.some(item => item.inputs === task.inputs); // filter or some
+
         if(isDuplicate){
             missings.innerHTML = `<div>Item already exist</div>`;
             return;
