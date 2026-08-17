@@ -270,6 +270,7 @@
         // Solution: Since item is the representation of the iteration of tasks array, just compare it to task object tosee if the stored value inside the object to check if the tasks array have exisitng data already.
        const isDuplicate = tasks.some(item => item.inputs === task.inputs); // filter or some
 
+       // Checks if there's duplicated data inside the tasks array. If yes return DOM UI rendering, false skip 
         if(isDuplicate){
             missings.innerHTML = `<div>Item already exist</div>`;
             return;
@@ -371,7 +372,7 @@
 
         filters.addEventListener("change", function(){
             const SelectedStatus = this.value;
-            
+            // if status is entpty(Let's say selected all status), if it's true the filter will show every tasks of every priority status, else it will filter the tasks of the selected filtered status.
             const filterStatus = SelectedStatus === "" ? tasks : tasks.filter(task => 
                  task.priorities === SelectedStatus);
                 renderTasks(filterStatus); // this is the problem why another task is rendered everytime I filter task status
@@ -379,7 +380,9 @@
 
         // render Filtered tasks
         function renderTasks(tasks) { // note: plural, this is the "controller"
-            taskList.innerHTML = ""; // clear old content first
+            taskList.innerHTML = ""; // clear old content first Q" Whatis your role here?
+            //A: To give a way to the new contents that will be loaded based on the filtered stats
+            //B: 
 
             tasks.forEach(task => {
                 renderTask(task); // your existing single-task function, unchanged
