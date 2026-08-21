@@ -151,7 +151,21 @@
             font-size: 12px;
         }
 
-        
+        .complete::after{
+            content: '';
+            position: absolute;
+            top: 50px;
+            background-color: black;
+            height: 2px;
+            width: 100%;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .complete.completed::after{
+            transform: scaleX(1);
+        } 
 
     </style>
 </head>
@@ -281,7 +295,7 @@
         localStorage.setItem("tasks", JSON.stringify(tasks)); // Turn object or array into string to Save Tasks in Local Storage and Save it to Local Storage
         console.log(...tasks);
         // Live rendering
-        renderTask(task);
+        renderTask(tasks);
             
         document.getElementById("inputs").value = ""; //DEbug: mismatch of Input id that causes Input to be unreadable Input < inputs
     };
@@ -300,6 +314,7 @@
                <option>High</option>
             </select>
                 <div style="display: flex; data-id="btnEdit" ">
+                    <input type="checkbox" class="check">
                     <button type="button" id="editBtn" class="editbtn" onclick="edit(${tasks.id})" style="font-color: &#xF62C; cursor: pointer; background: none; border: none; cursor: pointer; outline: none; padding: 0; width: 20px;"><i id="icons" class="ri-pencil-ai-line"></i></button>
                     <button type="button"  onclick="deletebtn(${tasks.id});" style="cursor: pointer; background: none; border: none; cursor: pointer; outline: none; padding: 0; width: 20px;" ><i class="ri-delete-bin-fill"></i></button>
                 </div>
@@ -390,6 +405,29 @@
                 renderTask(task); // your existing single-task function, unchanged
             });
         }
+
+        function toggle(id){// this might be the problem, where this fuction may not working at all.
+            tasks = tasks.find(task => {
+                return task.id === id;
+            })
+        };
+        
+        const check = document.querySelector(".check");
+
+        check.addEventListener("click", function() { // If i remve the Id here, the erre is uncaught ReferenceError on id  not defined.
+            check.classList.toggle("complete"); // Q: But why?
+            toggle(id);
+        });
+
+       
+        // //Marks the Task as Complete
+        // function toggle(tasks){
+
+        // }
+
+   
+
+
         // I deleted the tasks in renderTasks
         // Q: Why when i filtered the tasks, it doesn't show the tasks with the filtered Status
         // Assuming: That the tasks in param is the tasks array of Object it self
@@ -401,6 +439,8 @@
    
 
     // NEED TO SOLVE THE UNDEFIEND ID!
+
+    // TODO: Tomorrow i need to add where i can select or checkbox or check that the task is Completed
 
 </script>
 </body>
